@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+  Landing para campanha de conscientizacao (phishing simulado AUTORIZADO).
+  Tema: "expiracao de senha do Microsoft Teams".
+  Importe no GoPhish em Landing Pages (botao "Import Site" nao e necessario:
+  cole este HTML). Depois configure:
+    - Capture Submitted Data: LIGADO
+    - Capture Passwords: DESLIGADO  (nao guardar a senha real do colaborador)
+    - Redirect to: http://SEU-IP-OU-DOMINIO:8000/educativo
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar na sua conta</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      background: #f3f2f1; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .box {
+      background: #fff; width: 100%; max-width: 440px; padding: 44px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    }
+    .ms-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+    .ms-logo .sq { display: grid; grid-template-columns: 10px 10px; grid-gap: 2px; }
+    .ms-logo .sq span { width: 10px; height: 10px; display: block; }
+    .ms-logo .sq .r { background: #f25022; } .ms-logo .sq .g { background: #7fba00; }
+    .ms-logo .sq .b { background: #00a4ef; } .ms-logo .sq .y { background: #ffb900; }
+    .ms-logo b { color: #5e5e5e; font-size: 15px; font-weight: 600; }
+    h1 { font-size: 24px; font-weight: 600; margin: 0 0 4px; color: #1b1b1b; }
+    p.sub { font-size: 14px; color: #1b1b1b; margin: 0 0 18px; }
+    .alert {
+      background: #fed9cc; border-left: 4px solid #d83b01; padding: 10px 12px;
+      font-size: 13px; color: #5a1d01; margin-bottom: 18px;
+    }
+    input[type=email], input[type=text], input[type=password] {
+      width: 100%; border: none; border-bottom: 1px solid #666; padding: 8px 2px;
+      font-size: 15px; margin-bottom: 18px; outline: none;
+    }
+    input:focus { border-bottom: 2px solid #0067b8; }
+    .btn {
+      background: #0067b8; color: #fff; border: none; padding: 10px 26px;
+      font-size: 15px; cursor: pointer; float: right;
+    }
+    .btn:hover { background: #005da6; }
+    .row-links { font-size: 13px; color: #0067b8; margin-top: 6px; }
+    .foot { margin-top: 60px; text-align: right; color: #747474; font-size: 12px; }
+    .clear { clear: both; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="ms-logo">
+      <span class="sq"><span class="r"></span><span class="g"></span><span class="b"></span><span class="y"></span></span>
+      <b>Microsoft</b>
+    </div>
+
+    <h1>Sua senha expira hoje</h1>
+    <p class="sub">Confirme suas credenciais para manter o acesso ao Microsoft Teams.</p>
+
+    <div class="alert">
+      Detectamos que a senha da sua conta corporativa expira em algumas horas.
+      Entre novamente para evitar o bloqueio do acesso.
+    </div>
+
+    <form method="post" action="">
+      <input type="email" name="email" placeholder="E-mail corporativo" required autofocus>
+      <input type="password" name="password" placeholder="Senha" required>
+      <button class="btn" type="submit">Entrar</button>
+      <div class="clear"></div>
+    </form>
+
+    <div class="row-links">Nao consegue acessar sua conta?</div>
+
+    <div class="foot">&copy; Microsoft</div>
+  </div>
+</body>
+</html>

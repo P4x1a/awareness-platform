@@ -1,0 +1,11 @@
+# Nunca versionar segredos ou dados
+.env
+*.db
+data/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Favicon/branding local (nao versionar - mantem o repo generico)
+backend/app/static/brand/

@@ -1,0 +1,84 @@
+<!--
+  Template de e-mail - campanha "expiracao de senha do Teams" (versao caprichada).
+  Logo da Microsoft feita com blocos coloridos (renderiza no Outlook/Gmail sem
+  depender de imagem externa). Assunto sugerido: Sua senha do Microsoft Teams expira hoje
+  Cole este HTML na aba HTML do Template. {{.URL}} = link; {{.Tracker}} = registra abertura.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f2f1;padding:24px 0;font-family:'Segoe UI',Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border:1px solid #e1dfdd;">
+
+        <!-- Logo Microsoft -->
+        <tr>
+          <td style="padding:22px 28px 10px 28px;">
+            <!-- Logo como imagem (renderiza igual em qualquer cliente). Ajuste o
+                 host para o endereco/porta da sua plataforma. -->
+            <img src="http://172.16.154.58:8000/static/brand/ms-logo.png"
+                 width="159" height="43" alt="Microsoft"
+                 style="display:block;border:0;outline:none;text-decoration:none;">
+            <!--[if mso]>&nbsp;<![endif]-->
+          </td>
+        </tr>
+
+        <!-- Faixa Teams -->
+        <tr>
+          <td style="padding:0 28px;">
+            <div style="background:#4b53bc;color:#ffffff;padding:12px 18px;font-size:16px;font-weight:600;">
+              Microsoft Teams
+            </div>
+          </td>
+        </tr>
+
+        <!-- Corpo -->
+        <tr>
+          <td style="padding:24px 28px 8px 28px;color:#201f1e;font-size:15px;line-height:1.55;">
+            <p style="margin:0 0 14px;">Olá {{.FirstName}},</p>
+            <p style="margin:0 0 14px;">
+              Nosso sistema identificou que a senha da sua conta corporativa
+              <strong>expira hoje</strong>. Para continuar acessando o Microsoft Teams
+              e seus e-mails sem interrupção, é necessário confirmar suas credenciais.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Botao -->
+        <tr>
+          <td align="center" style="padding:10px 28px 22px 28px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td bgcolor="#4b53bc" style="border-radius:4px;">
+                  <a href="{{.URL}}" style="display:inline-block;padding:13px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;font-family:'Segoe UI',Arial,sans-serif;">
+                    Verificar minha conta
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Aviso -->
+        <tr>
+          <td style="padding:0 28px 20px 28px;color:#605e5c;font-size:13px;line-height:1.5;">
+            <p style="margin:0 0 6px;">
+              Por segurança, este link expira em breve. Caso a senha não seja renovada,
+              o acesso à sua conta poderá ser temporariamente suspenso.
+            </p>
+            <p style="margin:0;">Equipe de Suporte &middot; Microsoft 365</p>
+          </td>
+        </tr>
+
+        <!-- Rodape -->
+        <tr>
+          <td style="background:#faf9f8;border-top:1px solid #edebe9;padding:16px 28px;color:#a19f9d;font-size:11px;line-height:1.5;">
+            Esta é uma mensagem automática — por favor, não responda a este e-mail.
+            &copy; Microsoft Corporation. Todos os direitos reservados. Esta mensagem e
+            quaisquer anexos são confidenciais e destinados ao uso exclusivo do destinatário.
+          </td>
+        </tr>
+
+      </table>
+      {{.Tracker}}
+    </td>
+  </tr>
+</table>

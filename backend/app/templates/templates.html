@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Templates - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">Templates de e-mail</h1>
+    <p class="page-sub">Modelos de mensagem usados nas campanhas</p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger reveal">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-12 col-lg-7">
+    <div class="card reveal d1">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>{{ "Editar template" if edit else "Novo template" }}</span>
+        {% if edit %}<a href="/templates" class="small text-decoration-none">Cancelar</a>{% endif %}
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ '/templates/' ~ edit.id ~ '/edit' if edit else '/templates/new' }}">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" name="name" class="form-control" required
+                   value="{{ edit.name or '' }}" placeholder="Ex.: Aviso de expiracao de senha">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Assunto</label>
+            <input type="text" name="subject" class="form-control"
+                   value="{{ edit.subject or '' }}" placeholder="Sua senha expira hoje">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Corpo (HTML)</label>
+            <textarea name="html" class="form-control code" rows="13"
+                      spellcheck="false" placeholder="<html>...">{{ edit.html or '' }}</textarea>
+          </div>
+          <div class="form-text mb-3">
+            Variaveis do GoPhish: <code>{{ '{{.FirstName}}' }}</code>,
+            <code>{{ '{{.LastName}}' }}</code>, <code>{{ '{{.Email}}' }}</code>,
+            <code>{{ '{{.URL}}' }}</code> (link da campanha),
+            <code>{{ '{{.TrackingURL}}' }}</code>. Para registrar a abertura, inclua
+            <code>{{ '{{.Tracker}}' }}</code> no final do corpo.
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            {{ "Salvar alteracoes" if edit else "Salvar template" }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card reveal d2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Templates cadastrados</span>
+        <span class="text-muted small">{{ items | length }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr><th>Nome</th><th>Assunto</th><th class="text-end">Acoes</th></tr></thead>
+          <tbody>
+            {% for t in items %}
+            <tr{% if edit and edit.id == t.id %} class="table-active"{% endif %}>
+              <td class="fw-semibold">{{ t.name }}</td>
+              <td class="text-muted small">{{ t.subject }}</td>
+              <td class="text-end text-nowrap">
+                <a href="/templates/{{ t.id }}/edit" class="btn btn-sm btn-outline-primary">Editar</a>
+                <form method="post" action="/templates/{{ t.id }}/delete"
+                      onsubmit="return confirm('Remover o template &quot;{{ t.name }}&quot;?');"
+                      style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="text-center text-muted py-4">Nenhum template ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

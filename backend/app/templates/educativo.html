@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Simulacao de seguranca - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-9 col-xl-8">
+
+    <div class="edu-hero reveal">
+      <div class="edu-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h1 class="edu-title">Isto era um teste de phishing</h1>
+      <p class="edu-sub">
+        Voce acabou de inserir suas credenciais em uma pagina falsa. Fique tranquilo:
+        esta foi uma simulacao autorizada da equipe de Seguranca da Informacao &mdash;
+        <strong>nenhuma senha foi armazenada</strong>.
+      </p>
+    </div>
+
+    <div class="card reveal d1 mt-4">
+      <div class="card-body p-4">
+        <h2 class="h5">O que teria acontecido num ataque real?</h2>
+        <p class="text-muted mb-4">
+          Num ataque de verdade, um invasor usaria suas credenciais para acessar e-mail,
+          Teams e sistemas internos &mdash; e poderia instalar um programa malicioso no
+          seu computador. Para demonstrar isso com seguranca, acabamos de iniciar o
+          download de um <strong>arquivo de teste inofensivo</strong>
+          (<code>{{ fake_filename }}</code>).
+        </p>
+
+        <div class="edu-av">
+          <div class="edu-av-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <div>
+            <div class="fw-semibold">Seu antivirus deve ter bloqueado o arquivo.</div>
+            <div class="text-muted small">
+              Se apareceu um alerta do antivirus (ou o download foi barrado), a protecao
+              do seu equipamento funcionou como esperado. Voce nao precisa fazer nada.
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <a id="dl" href="{{ download_url }}" download="{{ fake_filename }}"
+             class="btn btn-outline-primary btn-sm">Baixar o arquivo de teste novamente</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal d2 mt-4">
+      <div class="card-body p-4">
+        <h2 class="h5">Como reconhecer golpes assim</h2>
+        <ul class="edu-list mb-0">
+          <li>Desconfie de mensagens com <strong>urgencia</strong> ("sua senha expira hoje").</li>
+          <li>Confira o <strong>endereco do site</strong> antes de digitar a senha.</li>
+          <li>Nunca informe credenciais a partir de um link recebido por e-mail.</li>
+          <li>Na duvida, acione a equipe de Seguranca da Informacao.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="text-center text-muted small mt-4 reveal d3">
+      Simulacao de conscientizacao &middot; {{ brand.name }}
+    </p>
+  </div>
+</div>
+
+<script>
+  // dispara o download do arquivo-teste assim que a pagina carrega
+  (function () {
+    try {
+      var a = document.getElementById("dl");
+      if (a) {
+        var t = document.createElement("a");
+        t.href = a.href; t.download = a.getAttribute("download") || "";
+        document.body.appendChild(t); t.click(); document.body.removeChild(t);
+      }
+    } catch (e) { /* botao manual continua disponivel */ }
+  })();
+</script>
+{% endblock %}

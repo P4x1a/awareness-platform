@@ -1,0 +1,24 @@
+services:
+  awareness-platform:
+    build: ./backend
+    container_name: awareness-platform
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - platform-data:/data
+    networks:
+      - gophish-net
+
+volumes:
+  platform-data:
+
+# Reutiliza a rede criada pelo compose do GoPhish, para alcancar o container
+# "gophish" pelo nome (GOPHISH_URL=https://gophish:3333).
+# Confirme o nome com: docker network ls | grep gophish
+# Normalmente e <pasta-do-gophish>_gophish-net (ex.: gophish-docker_gophish-net).
+networks:
+  gophish-net:
+    external: true
+    name: gophish-docker_gophish-net

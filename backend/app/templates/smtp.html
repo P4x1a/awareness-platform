@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Perfis SMTP - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">Perfis de envio (SMTP)</h1>
+    <p class="page-sub">Servidores de e-mail usados para disparar as campanhas</p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger reveal">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Novo / editar perfil -->
+  <div class="col-12 col-lg-5">
+    <div class="card reveal d1" id="form-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>{{ "Editar perfil" if edit else "Novo perfil" }}</span>
+        {% if edit %}<a href="/smtp" class="small text-decoration-none">Cancelar</a>{% endif %}
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ '/smtp/' ~ edit.id ~ '/edit' if edit else '/smtp/new' }}">
+          <div class="mb-3">
+            <label class="form-label">Nome do perfil</label>
+            <input type="text" name="name" class="form-control" required
+                   value="{{ edit.name or '' }}" placeholder="Ex.: SMTP Corporativo">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Remetente (From)</label>
+            <input type="text" name="from_address" class="form-control" required
+                   value="{{ edit.from_address or '' }}" placeholder="no-reply@suaempresa.com">
+            <div class="form-text">E-mail que aparece como remetente.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Servidor (host:porta)</label>
+            <input type="text" name="host" class="form-control" required
+                   value="{{ edit.host or '' }}" placeholder="smtp.suaempresa.com:587">
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Usuario</label>
+              <input type="text" name="username" class="form-control" autocomplete="off"
+                     value="{{ edit.username or '' }}" placeholder="usuario de autenticacao">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Senha</label>
+              <input type="password" name="password" class="form-control" autocomplete="new-password"
+                     placeholder="{{ 'deixe em branco p/ manter' if edit else '' }}">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Cabecalho "From" personalizado (opcional)</label>
+            <input type="text" name="from_header" class="form-control"
+                   value="{{ edit.from_header or '' }}"
+                   placeholder='Suporte de TI <no-reply@suaempresa.com>'>
+            <div class="form-text">
+              Use quando quiser um nome de exibicao e o campo acima rejeitar.
+              Ex.: <code>Nome Exibido &lt;email@dominio&gt;</code>.
+            </div>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="ignore_cert" id="ic"
+                   {% if edit is none or edit.ignore_cert_errors %}checked{% endif %}>
+            <label class="form-check-label" for="ic">
+              Ignorar erros de certificado (self-signed / cadeia incompleta)
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            {{ "Salvar alteracoes" if edit else "Salvar perfil" }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista -->
+  <div class="col-12 col-lg-7">
+    <div class="card reveal d2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Perfis cadastrados</span>
+        <span class="text-muted small">{{ profiles | length }} perfil(is)</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Nome</th><th>Remetente</th><th>Servidor</th>
+              <th class="text-end">Acoes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in profiles %}
+            <tr{% if edit and edit.id == p.id %} class="table-active"{% endif %}>
+              <td class="fw-semibold">{{ p.name }}</td>
+              <td class="text-muted">{{ p.from_address }}</td>
+              <td class="text-muted small">{{ p.host }}</td>
+              <td class="text-end text-nowrap">
+                <a href="/smtp/{{ p.id }}/edit" class="btn btn-sm btn-outline-primary">Editar</a>
+                <form method="post" action="/smtp/{{ p.id }}/delete"
+                      onsubmit="return confirm('Remover o perfil &quot;{{ p.name }}&quot;?');"
+                      style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-4">Nenhum perfil ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="text-muted small mt-3 reveal d3">
+  A senha nunca e exibida depois de salva. Ao editar, deixe o campo de senha em branco para
+  manter a atual. Para testar o envio, use o botao de teste no GoPhish ou dispare uma campanha
+  para um grupo so seu.
+</p>
+{% endblock %}

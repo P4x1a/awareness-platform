@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">Dashboard</h1>
+    <p class="page-sub">Visao consolidada das campanhas de conscientizacao</p>
+  </div>
+  {% if user.role == "si" %}
+  <a href="/campaigns/launch" class="btn btn-accent">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Lancar campanha
+  </a>
+  {% endif %}
+</div>
+
+{% if error %}
+<div class="alert alert-warning reveal">{{ error }}</div>
+{% endif %}
+
+<div class="stat-grid">
+  <div class="stat reveal d1">
+    <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+    <div class="stat-label">Alvos</div>
+    <div class="stat-value" data-count="{{ totals.total }}">0</div>
+  </div>
+  <div class="stat reveal d2">
+    <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+    <div class="stat-label">E-mails enviados</div>
+    <div class="stat-value" data-count="{{ totals.sent }}">0</div>
+  </div>
+  <div class="stat c-accent reveal d3">
+    <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+    <div class="stat-label">Aberturas</div>
+    <div class="stat-value" data-count="{{ totals.opened }}">0</div>
+  </div>
+  <div class="stat c-accent reveal d4">
+    <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74"/><path d="M14 11.5V9a2.5 2.5 0 0 1 5 0v6a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.5-3.6l-2-4A1.6 1.6 0 0 1 4 11l3 1.5"/></svg></span>
+    <div class="stat-label">Cliques</div>
+    <div class="stat-value" data-count="{{ totals.clicked }}">0</div>
+  </div>
+  <div class="stat c-danger reveal d5">
+    <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+    <div class="stat-label">Dados enviados</div>
+    <div class="stat-value" data-count="{{ totals.submitted }}">0</div>
+  </div>
+</div>
+
+<div class="card reveal d3">
+  <div class="card-header">Campanhas</div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Campanha</th><th>Status</th>
+          <th class="text-end">Alvos</th><th class="text-end">Enviados</th>
+          <th class="text-end">Abriram</th><th class="text-end">Clicaram</th>
+          <th class="text-end">Submeteram</th><th class="text-end">Taxa de clique</th>
+          <th class="text-end">Detalhes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in campaigns %}
+        {% set s = c.stats or {} %}
+        {% set sent = s.sent or 0 %}
+        {% set clicked = s.clicked or 0 %}
+        {% set rate = ((clicked / sent * 100) | round(1)) if sent else 0 %}
+        {% set st = (c.status or "") | lower %}
+        <tr>
+          <td class="fw-semibold">
+            <a href="/campaigns/{{ c.id }}" class="link-cell">{{ c.name }}</a>
+          </td>
+          <td>
+            {% if "progress" in st or "running" in st %}
+              <span class="pill pill-run"><span class="pill-dot"></span>{{ c.status }}</span>
+            {% elif "complet" in st or "finish" in st %}
+              <span class="pill pill-done"><span class="pill-dot"></span>{{ c.status }}</span>
+            {% else %}
+              <span class="pill pill-idle"><span class="pill-dot"></span>{{ c.status }}</span>
+            {% endif %}
+          </td>
+          <td class="text-end">{{ s.total or 0 }}</td>
+          <td class="text-end">{{ sent }}</td>
+          <td class="text-end">{{ s.opened or 0 }}</td>
+          <td class="text-end">{{ clicked }}</td>
+          <td class="text-end">{{ s.submitted_data or 0 }}</td>
+          <td>
+            <div class="rate">
+              <div class="rate-bar"><div class="rate-fill" data-rate="{{ rate }}"></div></div>
+              <span class="rate-num">{{ rate }}%</span>
+            </div>
+          </td>
+          <td class="text-end">
+            <a href="/campaigns/{{ c.id }}" class="btn btn-sm btn-outline-primary text-nowrap">
+              Ver quem clicou
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="text-center text-muted py-4">Nenhuma campanha ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p class="text-muted small mt-3 reveal d4">
+  Dados consultados em tempo real da API do GoPhish. Visao por departamento entra numa proxima versao.
+</p>
+{% endblock %}

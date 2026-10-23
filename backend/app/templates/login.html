@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Entrar - {{ brand.name }}{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      {% if brand.logo_url %}
+        <img src="{{ brand.logo_url }}" alt="{{ brand.name }}" class="login-logo">
+      {% else %}
+        <span class="login-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+      {% endif %}
+      <h1 class="login-title">{{ brand.name }}</h1>
+      <p class="login-sub">{{ brand.tagline }}</p>
+    </div>
+    <div class="login-body">
+      {% if error %}
+      <div class="alert alert-danger py-2">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/login">
+        <div class="mb-3">
+          <label class="form-label">Usuario</label>
+          <input type="text" name="username" class="form-control" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Senha</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2">Entrar</button>
+      </form>
+      <p class="text-center text-muted small mt-3 mb-0">Acesso restrito a equipe autorizada</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

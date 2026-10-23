@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ campaign.name if campaign else "Campanha" }} - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="mb-2 reveal">
+  <a href="/dashboard" class="small text-decoration-none">&larr; Voltar ao dashboard</a>
+</div>
+
+{% if error %}
+<div class="alert alert-danger reveal">{{ error }}</div>
+{% endif %}
+
+{% if campaign %}
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">{{ campaign.name }}</h1>
+    <p class="page-sub">
+      {% set st = (campaign.status or "") | lower %}
+      {% if "progress" in st or "running" in st %}
+        <span class="pill pill-run"><span class="pill-dot"></span>{{ campaign.status }}</span>
+      {% elif "complet" in st or "finish" in st %}
+        <span class="pill pill-done"><span class="pill-dot"></span>{{ campaign.status }}</span>
+      {% else %}
+        <span class="pill pill-idle"><span class="pill-dot"></span>{{ campaign.status }}</span>
+      {% endif %}
+      <span class="ms-2">Lancada em {{ (campaign.launch_date or "")[:16] | replace("T", " ") }}</span>
+    </p>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat reveal d1">
+    <div class="stat-label">Alvos</div>
+    <div class="stat-value" data-count="{{ stats.total }}">0</div>
+  </div>
+  <div class="stat reveal d2">
+    <div class="stat-label">Enviados</div>
+    <div class="stat-value" data-count="{{ stats.sent }}">0</div>
+  </div>
+  <div class="stat c-accent reveal d3">
+    <div class="stat-label">Abriram</div>
+    <div class="stat-value" data-count="{{ stats.opened }}">0</div>
+  </div>
+  <div class="stat c-accent reveal d4">
+    <div class="stat-label">Clicaram</div>
+    <div class="stat-value" data-count="{{ stats.clicked }}">0</div>
+  </div>
+  <div class="stat c-danger reveal d5">
+    <div class="stat-label">Enviaram dados</div>
+    <div class="stat-value" data-count="{{ stats.submitted }}">0</div>
+  </div>
+</div>
+
+<!-- Destaque: quem clicou e quem enviou dados -->
+<div class="row g-4 mb-1">
+  <div class="col-12 col-md-6">
+    <div class="card people-card reveal d1">
+      <div class="card-header people-head head-accent">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74"/><path d="M14 11.5V9a2.5 2.5 0 0 1 5 0v6a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.5-3.6l-2-4A1.6 1.6 0 0 1 4 11l3 1.5"/></svg>
+        Clicaram no link ({{ clicked_people | length }})
+      </div>
+      <ul class="people-list">
+        {% for r in clicked_people %}
+        {% set full = (r.first_name ~ " " ~ r.last_name) | trim %}
+        <li>
+          <span class="people-name">{{ full if full else r.email }}</span>
+          <span class="people-mail">{{ r.email }}{% if r.position %} &middot; {{ r.position }}{% endif %}</span>
+        </li>
+        {% else %}
+        <li class="people-empty">Ninguem clicou.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card people-card reveal d2">
+      <div class="card-header people-head head-danger">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Enviaram dados ({{ submitted_people | length }})
+      </div>
+      <ul class="people-list">
+        {% for r in submitted_people %}
+        {% set full = (r.first_name ~ " " ~ r.last_name) | trim %}
+        <li>
+          <span class="people-name">{{ full if full else r.email }}</span>
+          <span class="people-mail">{{ r.email }}{% if r.position %} &middot; {{ r.position }}{% endif %}</span>
+        </li>
+        {% else %}
+        <li class="people-empty">Ninguem enviou dados.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Resultados por alvo -->
+  <div class="col-12 col-xl-7">
+    <div class="card reveal d2">
+      <div class="card-header">Resultados por alvo</div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr><th>Alvo</th><th>E-mail</th><th>Cargo</th><th>Situacao</th></tr></thead>
+          <tbody>
+            {% for r in results %}
+            <tr>
+              {% set full = (r.first_name ~ " " ~ r.last_name) | trim %}
+              <td class="fw-semibold">{{ full if full else "—" }}</td>
+              <td class="text-muted small">{{ r.email }}</td>
+              <td class="text-muted small">{{ r.position }}</td>
+              <td>
+                {% set rs = r.status %}
+                {% if rs == "Submitted Data" %}
+                  <span class="status status-danger">Enviou dados</span>
+                {% elif rs == "Clicked Link" %}
+                  <span class="status status-accent">Clicou no link</span>
+                {% elif rs == "Email Opened" %}
+                  <span class="status status-info">Abriu o e-mail</span>
+                {% elif rs == "Email Reported" %}
+                  <span class="status status-good">Reportou</span>
+                {% elif rs == "Email Sent" %}
+                  <span class="status status-muted">E-mail enviado</span>
+                {% else %}
+                  <span class="status status-muted">{{ rs }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-4">Sem resultados ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Linha do tempo -->
+  <div class="col-12 col-xl-5">
+    <div class="card reveal d3">
+      <div class="card-header">Linha do tempo</div>
+      <div class="card-body timeline">
+        {% for ev in timeline %}
+        <div class="tl-item">
+          <span class="tl-dot
+            {% if ev.message == 'Submitted Data' %}tl-danger
+            {% elif ev.message == 'Clicked Link' %}tl-accent
+            {% elif ev.message == 'Email Opened' %}tl-info{% endif %}"></span>
+          <div>
+            <div class="tl-msg">
+              {% if ev.message == "Email Sent" %}E-mail enviado
+              {% elif ev.message == "Email Opened" %}Abriu o e-mail
+              {% elif ev.message == "Clicked Link" %}Clicou no link
+              {% elif ev.message == "Submitted Data" %}Enviou dados
+              {% elif ev.message == "Campaign Created" %}Campanha criada
+              {% else %}{{ ev.message }}{% endif %}
+            </div>
+            <div class="tl-meta">
+              {{ ev.email or "" }}{% if ev.email %} &middot; {% endif %}{{ (ev.time or "")[:19] | replace("T", " ") }}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-muted small mb-0">Sem eventos ainda.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Diretoria - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">Visao Executiva</h1>
+    <p class="page-sub">Panorama das campanhas de conscientizacao &middot; {{ n_campaigns }} campanha(s)</p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-warning reveal">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4 mb-1">
+  <!-- Medidor principal: taxa de clique -->
+  <div class="col-12 col-lg-4">
+    <div class="card exec-gauge reveal d1">
+      <div class="card-body text-center">
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle class="ring-fg" cx="60" cy="60" r="52" data-ring="{{ click_rate }}"></circle>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num"><span data-count="{{ click_rate }}" data-decimals="1">0</span>%</div>
+            <div class="ring-cap">taxa de clique</div>
+          </div>
+        </div>
+        <div class="mt-3">
+          <span class="risk-badge {{ risk.cls }}">Risco {{ risk.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="col-12 col-lg-8">
+    <div class="row g-4 h-100">
+      <div class="col-6 col-md-4">
+        <div class="stat reveal d2"><div class="stat-label">Alvos</div>
+          <div class="stat-value" data-count="{{ totals.total }}">0</div></div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat reveal d2"><div class="stat-label">E-mails enviados</div>
+          <div class="stat-value" data-count="{{ totals.sent }}">0</div></div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat c-accent reveal d3"><div class="stat-label">Taxa de abertura</div>
+          <div class="stat-value"><span data-count="{{ open_rate }}" data-decimals="1">0</span>%</div></div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat c-accent reveal d3"><div class="stat-label">Abriram</div>
+          <div class="stat-value" data-count="{{ totals.opened }}">0</div></div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat c-accent reveal d4"><div class="stat-label">Clicaram</div>
+          <div class="stat-value" data-count="{{ totals.clicked }}">0</div></div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat c-danger reveal d4"><div class="stat-label">Enviaram dados</div>
+          <div class="stat-value" data-count="{{ totals.submitted }}">0</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ranking por campanha -->
+<div class="card reveal d3 mt-4">
+  <div class="card-header">Campanhas por taxa de clique</div>
+  <div class="card-body">
+    {% for r in ranked %}
+    <div class="rank-row">
+      <a href="/campaigns/{{ r.id }}" class="rank-name link-cell">{{ r.name }}</a>
+      <div class="rank-bar"><div class="rate-fill" data-rate="{{ r.rate }}"></div></div>
+      <div class="rank-val">{{ r.rate }}% <span class="text-muted">({{ r.clicked }}/{{ r.sent }})</span></div>
+    </div>
+    {% else %}
+    <p class="text-muted small mb-0">Nenhuma campanha ainda.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<p class="text-muted small mt-3 reveal d4">
+  Classificacao de risco pela taxa de clique: Baixo &lt; 10% &middot; Medio 10&ndash;30% &middot; Alto &ge; 30%.
+  Dados em tempo real da API do GoPhish.
+</p>
+{% endblock %}

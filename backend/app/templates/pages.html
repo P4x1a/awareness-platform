@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Landing pages - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">Landing pages</h1>
+    <p class="page-sub">Paginas que recebem o clique e registram a interacao</p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger reveal">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-12 col-lg-7">
+    <div class="card reveal d1">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>{{ "Editar pagina" if edit else "Nova pagina" }}</span>
+        {% if edit %}<a href="/pages" class="small text-decoration-none">Cancelar</a>{% endif %}
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ '/pages/' ~ edit.id ~ '/edit' if edit else '/pages/new' }}">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" name="name" class="form-control" required
+                   value="{{ edit.name or '' }}" placeholder="Ex.: Portal - Redefinicao de senha">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">HTML da pagina</label>
+            <textarea name="html" class="form-control code" rows="13"
+                      spellcheck="false" placeholder="<html>...">{{ edit.html or '' }}</textarea>
+          </div>
+          <div class="form-text mb-3">
+            Cole o HTML completo da pagina (pode ser uma copia de um portal de login).
+            Para capturar o clique nos campos, mantenha um <code>&lt;form&gt;</code> na pagina.
+          </div>
+
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="capture_credentials" id="cc"
+                   {% if edit and edit.capture_credentials %}checked{% endif %}>
+            <label class="form-check-label" for="cc">
+              Registrar envio do formulario (quem preencheu e enviou)
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="capture_passwords" id="cp"
+                   {% if edit and edit.capture_passwords %}checked{% endif %}>
+            <label class="form-check-label" for="cp">
+              Capturar a <strong>senha</strong> digitada
+            </label>
+          </div>
+          <div class="alert alert-warning py-2 small mb-3">
+            &#9888; Capturar senha armazena a senha real do colaborador em texto. Para
+            conscientizacao isso normalmente <strong>nao</strong> e necessario &mdash; deixe
+            desligado, salvo exigencia formal e autorizada.
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Redirecionar apos o envio (opcional)</label>
+            <input type="text" name="redirect_url" class="form-control"
+                   value="{{ edit.redirect_url or '' }}"
+                   placeholder="https://intranet/educativo-voce-caiu-num-teste">
+            <div class="form-text">
+              Otimo para levar a uma pagina educativa de conscientizacao apos o clique.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            {{ "Salvar alteracoes" if edit else "Salvar pagina" }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card reveal d2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Paginas cadastradas</span>
+        <span class="text-muted small">{{ items | length }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr><th>Nome</th><th>Captura</th><th class="text-end">Acoes</th></tr></thead>
+          <tbody>
+            {% for p in items %}
+            <tr{% if edit and edit.id == p.id %} class="table-active"{% endif %}>
+              <td class="fw-semibold">{{ p.name }}</td>
+              <td>
+                {% if p.capture_passwords %}
+                  <span class="pill pill-idle" style="background:#fdecec;color:#d63a3f"><span class="pill-dot" style="background:#d63a3f"></span>Senha</span>
+                {% elif p.capture_credentials %}
+                  <span class="pill pill-run"><span class="pill-dot"></span>Envio</span>
+                {% else %}
+                  <span class="text-muted small">&mdash;</span>
+                {% endif %}
+              </td>
+              <td class="text-end text-nowrap">
+                <a href="/pages/{{ p.id }}/edit" class="btn btn-sm btn-outline-primary">Editar</a>
+                <form method="post" action="/pages/{{ p.id }}/delete"
+                      onsubmit="return confirm('Remover a pagina &quot;{{ p.name }}&quot;?');"
+                      style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="text-center text-muted py-4">Nenhuma pagina ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

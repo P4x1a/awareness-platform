@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Grupos - {{ brand.name }}{% endblock %}
+{% block content %}
+
+<div class="page-head reveal">
+  <div>
+    <h1 class="h3 page-title">Grupos de alvos</h1>
+    <p class="page-sub">Cadastre colaboradores manualmente ou importe uma planilha</p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger reveal">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Novo grupo -->
+  <div class="col-12 col-lg-5">
+    <div class="card reveal d1">
+      <div class="card-header">Novo grupo</div>
+      <div class="card-body">
+        <form method="post" action="/groups/new" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label class="form-label">Nome do grupo</label>
+            <input type="text" name="name" class="form-control" required
+                   placeholder="Ex.: Financeiro - Matriz">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Importar CSV (opcional)</label>
+            <input type="file" name="file" accept=".csv,text/csv" class="form-control">
+            <div class="form-text">
+              Colunas aceitas: <code>Nome, Sobrenome, E-mail, Cargo</code>
+              (ou <code>first_name, last_name, email, position</code>).
+              Separador virgula ou ponto-e-virgula.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Ou cole a lista (um por linha)</label>
+            <textarea name="members" class="form-control" rows="5"
+                      placeholder="Joao, Silva, joao.silva@empresa.com, Analista&#10;maria@empresa.com"></textarea>
+            <div class="form-text">
+              Formato: <code>Nome, Sobrenome, E-mail, Cargo</code>. So o e-mail ja basta.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Criar grupo</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de grupos -->
+  <div class="col-12 col-lg-7">
+    <div class="card reveal d2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Grupos cadastrados</span>
+        <span class="text-muted small">{{ groups | length }} grupo(s)</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th class="text-end">Alvos</th>
+              <th>Atualizado</th>
+              <th class="text-end">Acoes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for g in groups %}
+            <tr>
+              <td class="fw-semibold">{{ g.name }}</td>
+              <td class="text-end">{{ (g.targets or []) | length }}</td>
+              <td class="text-muted small">{{ (g.modified_date or "")[:10] }}</td>
+              <td class="text-end">
+                <form method="post" action="/groups/{{ g.id }}/delete"
+                      onsubmit="return confirm('Remover o grupo &quot;{{ g.name }}&quot;?');"
+                      style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-4">Nenhum grupo ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
